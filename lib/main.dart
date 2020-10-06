@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_time_until/time_calculator.dart';
 
 void main() {
   runApp(MyApp());
@@ -93,35 +94,85 @@ class Result extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          '${(_selected.difference(_now).inDays / 365).toStringAsFixed(2)} years',
-          style: Theme.of(context).textTheme.headline2,
-        ),
-        Text(
-          '${(_selected.difference(_now).inDays / 30).toStringAsFixed(2)} months',
-          style: Theme.of(context).textTheme.headline2,
-        ),
-        Text(
-          '${_selected.difference(_now).inDays} days',
-          style: Theme.of(context).textTheme.headline2,
-        ),
-        Text(
-          '${_selected.difference(_now).inHours} hours',
-          style: Theme.of(context).textTheme.headline2,
-        ),
-        Text(
-          '${_selected.difference(_now).inMinutes} minuts',
-          style: Theme.of(context).textTheme.headline2,
-        ),
-        Text(
-          '${_selected.difference(_now).inSeconds} seconds',
-          style: Theme.of(context).textTheme.headline2,
-        ),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            '${TimeCalc.diffInYears(_now, _selected)} years',
+            style: Theme.of(context).textTheme.headline2,
+          ),
+          Text(
+            '${TimeCalc.diffInMonths(_now, _selected)} months',
+            style: Theme.of(context).textTheme.headline2,
+          ),
+          Text(
+            '${TimeCalc.diffInWeeks(_now, _selected)} weeks',
+            style: Theme.of(context).textTheme.headline2,
+          ),
+          Text(
+            '${TimeCalc.diffInDays(_now, _selected)} days',
+            style: Theme.of(context).textTheme.headline2,
+          ),
+          Text(
+            '${TimeCalc.diffInHours(_now, _selected)} hours',
+            style: Theme.of(context).textTheme.headline2,
+          ),
+          Text(
+            '${TimeCalc.diffInMinutes(_now, _selected)} minutes',
+            style: Theme.of(context).textTheme.headline2,
+          ),
+          Text(
+            '${TimeCalc.diffInSeconds(_now, _selected)} seconds',
+            style: Theme.of(context).textTheme.headline2,
+          ),
+          Text(
+            '${TimeCalc.diffInMedievalMoment(_now, _selected)} moments',
+            style: Theme.of(context).textTheme.headline2,
+          ),
+          Text(
+            '${TimeCalc.diffInKe(_now, _selected)} ke',
+            style: Theme.of(context).textTheme.headline2,
+          ),
+          Text(
+            '${TimeCalc.diffInElectronicsJiffy(_now, _selected)} jiffies',
+            style: Theme.of(context).textTheme.headline2,
+          ),
+          Text(
+            '${TimeCalc.diffInPhysicsJiffy(_now, _selected)} jiffies',
+            style: Theme.of(context).textTheme.headline2,
+          ),
+          Text(
+            '${TimeCalc.diffInLustrum(_now, _selected)} lustrums',
+            style: Theme.of(context).textTheme.headline2,
+          ),
+          Text(
+            '${TimeCalc.diffInDecades(_now, _selected)} decades',
+            style: Theme.of(context).textTheme.headline2,
+          ),
+          Text(
+            '${TimeCalc.diffInCenturies(_now, _selected)} centuries',
+            style: Theme.of(context).textTheme.headline2,
+          ),
+          Text(
+            '${TimeCalc.diffInMillennia(_now, _selected)} millenia',
+            style: Theme.of(context).textTheme.headline2,
+          ),
+          Text(
+            '${TimeCalc.diffInMegannum(_now, _selected)} meganum',
+            style: Theme.of(context).textTheme.headline2,
+          ),
+          Text(
+            '${TimeCalc.diffInGalacticYear(_now, _selected)} galactic years',
+            style: Theme.of(context).textTheme.headline2,
+          ),
+          Text(
+            '${TimeCalc.diffInPlankTime(_now, _selected)} plank time unit',
+            style: Theme.of(context).textTheme.headline2,
+          ),
+        ],
+      ),
     );
   }
 }
