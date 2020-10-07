@@ -143,7 +143,10 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
           child: _isSelected
               ? PageBuilder(TimeCalculator(_now, _selected, _precision))
-              : Text('Please select a date')),
+              : Text(
+                  'Please select a date',
+                  style: Theme.of(context).textTheme.headline3,
+                )),
       floatingActionButton: FloatingActionButton(
         onPressed: _showDatePicker,
         tooltip: 'Select a date',
