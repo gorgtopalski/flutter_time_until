@@ -1,5 +1,39 @@
 import 'dart:math';
 
+class TimeCalculator {
+  final DateTime start, end;
+  final int precision;
+
+  TimeCalculator(this.start, this.end, this.precision);
+
+  Map<String, String> get common => {
+        'years': TimeCalc.diffInYears(start, end, precision),
+        'months': TimeCalc.diffInMonths(start, end, precision),
+        'weeks': TimeCalc.diffInWeeks(start, end, precision),
+        'days': TimeCalc.diffInDays(start, end, precision),
+        'hours': TimeCalc.diffInHours(start, end, precision),
+        'minutes': TimeCalc.diffInMinutes(start, end, precision),
+        'seconds': TimeCalc.diffInSeconds(start, end, precision),
+      };
+
+  Map<String, String> get ancient => {
+        'moments': TimeCalc.diffInMedievalMoment(start, end, precision),
+        'lustrum': TimeCalc.diffInLustrum(start, end, precision),
+        'decades': TimeCalc.diffInDecades(start, end, precision),
+        'centuries': TimeCalc.diffInCenturies(start, end, precision),
+        'millenia': TimeCalc.diffInMillennia(start, end, precision),
+        'ke': TimeCalc.diffInKe(start, end, precision),
+      };
+
+  Map<String, String> get scientific => {
+        'plank time': TimeCalc.diffInPlankTime(start, end, precision),
+        'galactic year': TimeCalc.diffInGalacticYear(start, end, precision),
+        'electronic jiffies':
+            TimeCalc.diffInElectronicsJiffy(start, end, precision),
+        'physics jiffies': TimeCalc.diffInPhysicsJiffy(start, end, precision),
+      };
+}
+
 class TimeCalc {
   static const int daysInYear = 365;
   static const int daysInMonth = 30;
