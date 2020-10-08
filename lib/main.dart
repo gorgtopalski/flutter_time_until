@@ -15,14 +15,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Time Until',
-      theme: ApplicationTheme(isDark: false).themeData,
+      theme: ApplicationTheme(isDark: true).themeData,
       home: MyHomePage(title: 'Time Until'),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
-enum PopUpCommands { dark, increment, decrement }
+enum PopUpCommands { dark, increment, decrement, time }
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -39,6 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isSelected = false;
   int _precision = 2;
   bool _dark = false;
+  bool _time = false;
 
   _MyHomePageState() {
     _now = DateTime.now();
@@ -53,21 +54,38 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _setSelectedDate(DateTime selected) {
+    if (selected != null) {
+      setState(() {
+        _selected = selected;
+        _isSelected = true;
+      });
+    }
+  }
+
+  void _addTimeToSelectedDate(TimeOfDay time) {
+    if (time != null) {
+      setState(() {
+        _selected =
+            _selected.add(Duration(hours: time.hour, minutes: time.minute));
+      });
+    }
+  }
+
   //Shows the DatePicker widget and updates the state if one is selected
   void _showDatePicker() {
+    if (_time) {
+      showTimePicker(
+              context: context, initialTime: TimeOfDay(hour: 0, minute: 0))
+          .then((value) => _addTimeToSelectedDate(value));
+    }
+
     showDatePicker(
-            context: context,
-            initialDate: _now,
-            firstDate: _now,
-            lastDate: DateTime.utc(DateTime.now().year + 50))
-        .then((value) => {
-              if (value != null)
-                {
-                  _selected = value,
-                  _isSelected = true,
-                }
-            })
-        .whenComplete(() => setState(() {}));
+      context: context,
+      initialDate: _now,
+      firstDate: _now,
+      lastDate: DateTime.utc(DateTime.now().year + 50),
+    ).then((value) => {_setSelectedDate(value)});
   }
 
   @override
@@ -109,6 +127,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       ));
                     }
                     break;
+                  case PopUpCommands.time:
+                    setState(() {
+                      _time = !_time;
+                    });
+                    break;
                 }
               },
               itemBuilder: (BuildContext context) =>
@@ -128,6 +151,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     leading: Icon(Icons.remove),
                     title: Text('Remove precision'),
                   ),
+                ),
+                PopupMenuDivider(),
+                CheckedPopupMenuItem<PopUpCommands>(
+                  value: PopUpCommands.time,
+                  child: const Text('Allow time selection'),
+                  checked: _time,
                 ),
                 PopupMenuDivider(),
                 CheckedPopupMenuItem<PopUpCommands>(
