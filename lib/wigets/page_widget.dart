@@ -44,7 +44,7 @@ class PageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(10.0),
       child: Center(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -54,7 +54,7 @@ class PageWidget extends StatelessWidget {
           SizedBox(
             height: 25,
           ),
-          DisplayEntries(entries)
+          Expanded(child: DisplayEntries(entries))
         ],
       )),
     );
@@ -75,14 +75,14 @@ class PageTitle extends StatelessWidget {
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.headline1,
+          style: Theme.of(context).textTheme.headline2,
         ),
         SizedBox(
           width: 20,
         ),
         Icon(icon,
-            color: Theme.of(context).textTheme.headline1.color,
-            size: Theme.of(context).textTheme.headline1.fontSize)
+            color: Theme.of(context).textTheme.headline2.color,
+            size: Theme.of(context).textTheme.headline2.fontSize)
       ],
     );
   }
@@ -95,13 +95,32 @@ class DisplayEntries extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: entries.keys
-          .map((key) => Text(
-                entries[key] + ' ' + key,
-                style: Theme.of(context).textTheme.headline2,
-              ))
-          .toList(),
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: entries.keys.length,
+      itemBuilder: (BuildContext context, int index) {
+        var key = entries.keys.elementAt(index);
+        return Entry(entries[key], key);
+      },
+    );
+  }
+}
+
+class Entry extends StatelessWidget {
+  final String title;
+  final String subtitle;
+
+  Entry(this.title, this.subtitle);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        leading: Icon(Icons.access_alarm),
+        contentPadding: EdgeInsets.all(8),
+        title: Text(title),
+        subtitle: Text(subtitle),
+      ),
     );
   }
 }
