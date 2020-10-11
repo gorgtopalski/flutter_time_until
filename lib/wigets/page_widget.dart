@@ -2,6 +2,48 @@ import 'package:flutter/material.dart';
 
 import '../time_calculator.dart';
 
+class TabBuilder extends State<StatefulWidget>
+    with SingleTickerProviderStateMixin {
+  final TimeCalculator _calc;
+  TabController _controller;
+
+  TabBuilder(this._calc) {
+    _controller = TabController(vsync: this, length: 3, initialIndex: 0);
+  }
+
+  TabBar getTabBar(BuildContext context) {
+    return TabBar(
+      controller: _controller,
+      tabs: [
+        Tab(
+          icon: Icon(Icons.query_builder),
+          text: 'Common',
+        ),
+        Tab(
+          icon: Icon(Icons.public),
+          text: 'Ancient',
+        ),
+        Tab(
+          icon: Icon(Icons.biotech),
+          text: 'Scientifc',
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(4),
+      child: TabBarView(controller: _controller, children: [
+        DisplayEntries(_calc.common),
+        DisplayEntries(_calc.ancient),
+        DisplayEntries(_calc.scientific),
+      ]),
+    );
+  }
+}
+
 class PageBuilder extends StatelessWidget {
   final controller = PageController(initialPage: 0);
 
@@ -75,14 +117,14 @@ class PageTitle extends StatelessWidget {
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.headline2,
+          style: Theme.of(context).textTheme.headline3,
         ),
         SizedBox(
           width: 20,
         ),
         Icon(icon,
-            color: Theme.of(context).textTheme.headline2.color,
-            size: Theme.of(context).textTheme.headline2.fontSize)
+            color: Theme.of(context).textTheme.headline3.color,
+            size: Theme.of(context).textTheme.headline3.fontSize)
       ],
     );
   }
@@ -96,7 +138,6 @@ class DisplayEntries extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      shrinkWrap: true,
       itemCount: entries.keys.length,
       itemBuilder: (BuildContext context, int index) {
         var key = entries.keys.elementAt(index);
@@ -116,7 +157,7 @@ class Entry extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: Icon(Icons.access_alarm),
+        leading: Icon(Icons.arrow_right),
         contentPadding: EdgeInsets.all(8),
         title: Text(title),
         subtitle: Text(subtitle),
