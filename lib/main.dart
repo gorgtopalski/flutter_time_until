@@ -34,17 +34,25 @@ class HomePage extends StatelessWidget {
   //Shows the DatePicker widget and updates the state if one is selected
   void _showDatePicker(BuildContext context, ApplicationState state) {
     if (state.showTime) {
-      showTimePicker(
-              context: context, initialTime: TimeOfDay(hour: 0, minute: 0))
-          .then((value) => state.addTimeToSelectedDate(value));
+      showDatePicker(
+        context: context,
+        initialDate: state.now,
+        firstDate: state.now,
+        lastDate: DateTime.utc(state.now.year + 50),
+      ).then((date) => {
+            showTimePicker(
+                    context: context,
+                    initialTime: TimeOfDay(hour: 0, minute: 0))
+                .then((time) => state.setSelectedDate(date, time))
+          });
+    } else {
+      showDatePicker(
+        context: context,
+        initialDate: state.now,
+        firstDate: state.now,
+        lastDate: DateTime.utc(state.now.year + 50),
+      ).then((value) => {state.setSelectedDate(value)});
     }
-
-    showDatePicker(
-      context: context,
-      initialDate: state.now,
-      firstDate: state.now,
-      lastDate: DateTime.utc(state.now.year + 50),
-    ).then((value) => {state.setSelectedDate(value)});
   }
 
   @override
