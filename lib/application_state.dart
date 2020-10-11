@@ -23,18 +23,15 @@ class ApplicationState extends ChangeNotifier {
     tabBuilder = TabBuilder(TimeCalculator(now, selected, precision));
   }
 
-  void setSelectedDate(DateTime selected) {
+  void setSelectedDate(DateTime selected, [TimeOfDay time]) {
     if (selected != null) {
-      this.selected = selected;
+      if (time != null) {
+        this.selected =
+            selected.add(Duration(hours: time.hour, minutes: time.minute));
+      } else {
+        this.selected = selected;
+      }
       isSelected = true;
-      _updateTabBuilder();
-      notifyListeners();
-    }
-  }
-
-  void addTimeToSelectedDate(TimeOfDay time) {
-    if (time != null && selected != null) {
-      selected = selected.add(Duration(hours: time.hour, minutes: time.minute));
       _updateTabBuilder();
       notifyListeners();
     }
