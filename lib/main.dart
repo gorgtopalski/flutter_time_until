@@ -1,13 +1,12 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_time_until/time_calculator.dart';
-import 'package:flutter_time_until/wigets/page_widget.dart';
+import 'package:provider/provider.dart';
 
+import 'application_state.dart';
 import 'common/theme.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(ChangeNotifierProvider(
+      create: (context) => ApplicationState(), child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -15,8 +14,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Time Until',
-      theme: ApplicationTheme(isDark: true).themeData,
-      home: MyHomePage(title: 'Time Until'),
+      theme:
+          ApplicationTheme(isDark: context.watch<ApplicationState>().darkTheme)
+              .themeData,
+      home: HomePage('Time Until'),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -24,120 +25,76 @@ class MyApp extends StatelessWidget {
 
 enum PopUpCommands { dark, increment, decrement, time }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
+class HomePage extends StatelessWidget {
   final String title;
 
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  DateTime _now;
-  DateTime _selected;
-  bool _isSelected = false;
-  int _precision = 2;
-  bool _dark = false;
-  bool _time = false;
-
-  _MyHomePageState() {
-    _now = DateTime.now();
-    Timer.periodic(Duration(seconds: 1), _timerCallback);
-  }
-
-  //Updatres current date every second.
-  //Used to simulate the countdown
-  void _timerCallback(Timer t) {
-    setState(() {
-      _now = DateTime.now();
-    });
-  }
-
-  void _setSelectedDate(DateTime selected) {
-    if (selected != null) {
-      setState(() {
-        _selected = selected;
-        _isSelected = true;
-      });
-    }
-  }
-
-  void _addTimeToSelectedDate(TimeOfDay time) {
-    if (time != null) {
-      setState(() {
-        _selected =
-            _selected.add(Duration(hours: time.hour, minutes: time.minute));
-      });
-    }
-  }
+  HomePage(this.title);
 
   //Shows the DatePicker widget and updates the state if one is selected
-  void _showDatePicker() {
-    if (_time) {
+  void _showDatePicker(BuildContext context, ApplicationState state) {
+    if (state.showTime) {
       showTimePicker(
               context: context, initialTime: TimeOfDay(hour: 0, minute: 0))
-          .then((value) => _addTimeToSelectedDate(value));
+          .then((value) => state.addTimeToSelectedDate(value));
     }
 
     showDatePicker(
       context: context,
-      initialDate: _now,
-      firstDate: _now,
-      lastDate: DateTime.utc(DateTime.now().year + 50),
-    ).then((value) => {_setSelectedDate(value)});
+      initialDate: state.now,
+      firstDate: state.now,
+      lastDate: DateTime.utc(state.now.year + 50),
+    ).then((value) => {state.setSelectedDate(value)});
   }
 
   @override
   Widget build(BuildContext context) {
+    var state = context.watch<ApplicationState>();
+
     return Scaffold(
       appBar: AppBar(
         leading: Icon(Icons.date_range),
-        title: Text(widget.title),
+        title: Text(
+          title + (state.isSelected ? ' ' + state.selected.toString() : ''),
+          textAlign: TextAlign.justify,
+        ),
+        bottom: state.isSelected ? state.tabBuilder.getTabBar(context) : null,
         actions: [
           Builder(
             builder: (context) => PopupMenuButton<PopUpCommands>(
               onSelected: (PopUpCommands result) {
-                print(_precision);
                 switch (result) {
                   case PopUpCommands.dark:
-                    setState(() {
-                      _dark = !_dark;
-                    });
+                    state.changeTheme(!state.darkTheme);
                     break;
                   case PopUpCommands.increment:
-                    if (_precision < 5) {
-                      setState(() {
-                        _precision++;
-                      });
+                    if (state.precision < 5) {
+                      state.updatePrecission(state.precision + 1);
                       Scaffold.of(context).showSnackBar(SnackBar(
-                        content: Text('Value precision is set to $_precision'),
+                        content: Text(
+                            'Value precision is set to ${state.precision}'),
                         duration: Duration(seconds: 1),
                       ));
                     }
                     break;
                   case PopUpCommands.decrement:
-                    if (_precision > 1) {
-                      setState(() {
-                        _precision--;
-                      });
+                    if (state.precision > 1) {
+                      state.updatePrecission(state.precision - 1);
                       Scaffold.of(context).showSnackBar(SnackBar(
-                        content: Text('Value precision is set to $_precision'),
+                        content: Text(
+                            'Value precision is set to ${state.precision}'),
                         duration: Duration(seconds: 1),
                       ));
                     }
                     break;
                   case PopUpCommands.time:
-                    setState(() {
-                      _time = !_time;
-                    });
+                    state.showTimePicker(!state.showTime);
                     break;
                 }
               },
               itemBuilder: (BuildContext context) =>
                   <PopupMenuEntry<PopUpCommands>>[
                 PopupMenuItem<PopUpCommands>(
-                  enabled: _precision < 5,
+                  enabled: state.precision < 5,
                   value: PopUpCommands.increment,
                   child: ListTile(
                     leading: Icon(Icons.add),
@@ -145,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 PopupMenuItem<PopUpCommands>(
-                  enabled: _precision > 0,
+                  enabled: state.precision > 0,
                   value: PopUpCommands.decrement,
                   child: ListTile(
                     leading: Icon(Icons.remove),
@@ -156,13 +113,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 CheckedPopupMenuItem<PopUpCommands>(
                   value: PopUpCommands.time,
                   child: const Text('Allow time selection'),
-                  checked: _time,
+                  checked: state.showTime,
                 ),
                 PopupMenuDivider(),
                 CheckedPopupMenuItem<PopUpCommands>(
                   value: PopUpCommands.dark,
                   child: const Text('Dark Mode'),
-                  checked: _dark,
+                  checked: state.darkTheme,
                 ),
               ],
             ),
@@ -170,14 +127,14 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: Center(
-          child: _isSelected
-              ? PageBuilder(TimeCalculator(_now, _selected, _precision))
+          child: state.isSelected
+              ? state.tabBuilder.build(context)
               : Text(
                   'Please select a date',
-                  style: Theme.of(context).textTheme.headline3,
+                  style: Theme.of(context).textTheme.headline4,
                 )),
       floatingActionButton: FloatingActionButton(
-        onPressed: _showDatePicker,
+        onPressed: () => {_showDatePicker(context, state)},
         tooltip: 'Select a date',
         child: Icon(Icons.date_range),
       ),
