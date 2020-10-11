@@ -18,7 +18,7 @@ class ApplicationPopUpMenu extends StatelessWidget {
               state.changeTheme(!state.darkTheme);
               break;
             case PopUpCommands.increment:
-              if (state.precision < 5) {
+              if (state.precision < 20) {
                 state.updatePrecission(state.precision + 1);
                 Scaffold.of(context).showSnackBar(SnackBar(
                   content: Text('Value precision is set to ${state.precision}'),
@@ -42,7 +42,7 @@ class ApplicationPopUpMenu extends StatelessWidget {
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<PopUpCommands>>[
           PopupMenuItem<PopUpCommands>(
-            enabled: state.precision < 5,
+            enabled: state.precision < 20,
             value: PopUpCommands.increment,
             child: ListTile(
               leading: Icon(Icons.add),
