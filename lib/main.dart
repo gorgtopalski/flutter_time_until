@@ -13,23 +13,21 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var theme =
+        ApplicationTheme(isDark: context.watch<ApplicationState>().darkTheme)
+            .themeData;
+
     return MaterialApp(
       title: 'Time Until',
-      theme:
-          ApplicationTheme(isDark: context.watch<ApplicationState>().darkTheme)
-              .themeData,
-      home: HomePage('Time Until'),
+      theme: theme,
+      home: HomePage(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
-enum PopUpCommands { dark, increment, decrement, time }
-
 class HomePage extends StatelessWidget {
-  final String title;
-
-  HomePage(this.title);
+  final String title = 'Time Until';
 
   //Shows the DatePicker widget and updates the state if one is selected
   void _showDatePicker(BuildContext context, ApplicationState state) {
@@ -55,6 +53,14 @@ class HomePage extends StatelessWidget {
     }
   }
 
+  String _generateTitle(DateTime selected) {
+    if (selected == null) {
+      return title;
+    } else {
+      return 'Time Until: ${selected.toLocal()}';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var state = context.watch<ApplicationState>();
@@ -63,7 +69,7 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         leading: Icon(Icons.date_range),
         title: Text(
-          title + (state.isSelected ? ' ' + state.selected.toString() : ''),
+          _generateTitle(state.selected),
           textAlign: TextAlign.justify,
         ),
         bottom: state.isSelected ? state.tabBuilder.getTabBar(context) : null,
