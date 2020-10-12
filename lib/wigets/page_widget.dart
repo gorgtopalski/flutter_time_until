@@ -15,6 +15,7 @@ class TabBuilder extends State<StatefulWidget>
   TabBar getTabBar(BuildContext context) {
     return TabBar(
       controller: _controller,
+      indicatorColor: Theme.of(context).colorScheme.primary,
       tabs: [
         Tab(
           icon: Icon(Icons.query_builder),
@@ -59,7 +60,7 @@ class DisplayEntries extends StatelessWidget {
       itemCount: entries.keys.length,
       itemBuilder: (BuildContext context, int index) {
         var key = entries.keys.elementAt(index);
-        return Entry(entries[key], key);
+        return StatufulEntry(entries[key], key);
       },
     );
   }
@@ -80,6 +81,60 @@ class Entry extends StatelessWidget {
         title: Text(title),
         subtitle: Text(subtitle),
       ),
+    );
+  }
+}
+
+class StatufulEntry extends StatefulWidget {
+  final String title;
+  final String subtitle;
+
+  StatufulEntry(this.title, this.subtitle);
+
+  @override
+  _StatufulEntryState createState() => _StatufulEntryState();
+}
+
+class _StatufulEntryState extends State<StatufulEntry> {
+  var icon = Icons.arrow_right;
+  bool tapped = false;
+
+  void _onTap() {
+    setState(() {
+      tapped = !tapped;
+      tapped ? icon = Icons.arrow_drop_down : icon = Icons.arrow_right;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+          onTap: _onTap,
+          selected: tapped,
+          leading: Icon(icon),
+          contentPadding: EdgeInsets.all(8),
+          title: Text(widget.title),
+          subtitle: tapped
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(widget.subtitle),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 25,
+                    ),
+                    Text(
+                        'The amount of time light takes to travel one Planck length. Theoretically, this is the smallest time measurement that will ever be possible.[3] Smaller time units have no use in physics as we understand it today.'),
+                    SizedBox(
+                      height: 25,
+                    ),
+                  ],
+                )
+              : Text(widget.subtitle)),
     );
   }
 }
