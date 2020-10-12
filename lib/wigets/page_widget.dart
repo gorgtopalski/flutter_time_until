@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../application_state.dart';
 import '../time_calculator.dart';
 
 class TabBuilder extends State<StatefulWidget>
     with SingleTickerProviderStateMixin {
-  final TimeCalculator _calc;
   TabController _controller;
 
-  TabBuilder(this._calc) {
+  TabBuilder() {
     _controller = TabController(vsync: this, length: 3, initialIndex: 0);
   }
 
@@ -33,12 +34,15 @@ class TabBuilder extends State<StatefulWidget>
 
   @override
   Widget build(BuildContext context) {
+    var state = context.watch<ApplicationState>();
+    var calc = TimeCalculator(state.now, state.selected, state.precision);
+
     return Container(
       margin: const EdgeInsets.all(4),
       child: TabBarView(controller: _controller, children: [
-        DisplayEntries(_calc.common),
-        DisplayEntries(_calc.ancient),
-        DisplayEntries(_calc.scientific),
+        DisplayEntries(calc.common),
+        DisplayEntries(calc.ancient),
+        DisplayEntries(calc.scientific),
       ]),
     );
   }

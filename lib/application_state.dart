@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'time_calculator.dart';
 import 'wigets/page_widget.dart';
 
 class ApplicationState extends ChangeNotifier {
@@ -13,14 +12,10 @@ class ApplicationState extends ChangeNotifier {
   int precision = 2;
   bool darkTheme = true;
   bool showTime = false;
-  TabBuilder tabBuilder;
+  TabBuilder tabBuilder = TabBuilder();
 
   ApplicationState() {
     Timer.periodic(Duration(seconds: 1), updateCurrenTimeCallback);
-  }
-
-  void _updateTabBuilder() {
-    tabBuilder = TabBuilder(TimeCalculator(now, selected, precision));
   }
 
   void setSelectedDate(DateTime selected, [TimeOfDay time]) {
@@ -32,20 +27,17 @@ class ApplicationState extends ChangeNotifier {
         this.selected = selected;
       }
       isSelected = true;
-      _updateTabBuilder();
       notifyListeners();
     }
   }
 
   void updatePrecission(int precision) {
     this.precision = precision;
-    _updateTabBuilder();
     notifyListeners();
   }
 
   void updateCurrentTime() {
     now = DateTime.now();
-    _updateTabBuilder();
     notifyListeners();
   }
 
