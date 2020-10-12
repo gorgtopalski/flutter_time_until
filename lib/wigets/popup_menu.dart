@@ -7,6 +7,14 @@ import '../application_state.dart';
 enum PopUpCommands { dark, increment, decrement, time }
 
 class ApplicationPopUpMenu extends StatelessWidget {
+  void _precisionChangeNotification(BuildContext context) {
+    var state = context.read<ApplicationState>();
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text('Value precision is set to ${state.precision}'),
+      duration: Duration(seconds: 1),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     var state = context.watch<ApplicationState>();
@@ -20,19 +28,13 @@ class ApplicationPopUpMenu extends StatelessWidget {
             case PopUpCommands.increment:
               if (state.precision < 20) {
                 state.updatePrecission(state.precision + 1);
-                Scaffold.of(context).showSnackBar(SnackBar(
-                  content: Text('Value precision is set to ${state.precision}'),
-                  duration: Duration(seconds: 1),
-                ));
+                _precisionChangeNotification(context);
               }
               break;
             case PopUpCommands.decrement:
               if (state.precision > 1) {
                 state.updatePrecission(state.precision - 1);
-                Scaffold.of(context).showSnackBar(SnackBar(
-                  content: Text('Value precision is set to ${state.precision}'),
-                  duration: Duration(seconds: 1),
-                ));
+                _precisionChangeNotification(context);
               }
               break;
             case PopUpCommands.time:
@@ -50,7 +52,7 @@ class ApplicationPopUpMenu extends StatelessWidget {
             ),
           ),
           PopupMenuItem<PopUpCommands>(
-            enabled: state.precision > 0,
+            enabled: state.precision > 1,
             value: PopUpCommands.decrement,
             child: ListTile(
               leading: Icon(Icons.remove),
