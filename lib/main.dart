@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_time_until/wigets/popup_menu.dart';
+//import 'package:intl/date_symbol_data_file.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/intl_standalone.dart';
 import 'package:provider/provider.dart';
 
 import 'application_state.dart';
 import 'common/theme.dart';
 
 void main() {
-  runApp(ChangeNotifierProvider(
-      create: (context) => ApplicationState(), child: MyApp()));
+  findSystemLocale()
+      .then((value) => {
+            Intl.defaultLocale = value,
+            initializeDateFormatting(),
+          })
+      .whenComplete(() => runApp(ChangeNotifierProvider(
+          create: (context) => ApplicationState(), child: MyApp())));
 }
 
 class MyApp extends StatelessWidget {
@@ -28,6 +37,7 @@ class MyApp extends StatelessWidget {
 
 class HomePage extends StatelessWidget {
   final String title = 'Time Until';
+  final format = new DateFormat.yMd();
 
   //Shows the DatePicker widget and updates the state if one is selected
   void _showDatePicker(BuildContext context, ApplicationState state) {
@@ -57,7 +67,7 @@ class HomePage extends StatelessWidget {
     if (selected == null) {
       return title;
     } else {
-      return 'Time Until: ${selected.toLocal()}';
+      return 'Time Until ${format.format(selected.toLocal())}';
     }
   }
 
