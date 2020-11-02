@@ -9,7 +9,7 @@ class ApplicationState extends ChangeNotifier {
   DateTime now = DateTime.now();
   DateTime selected;
   bool isSelected = false;
-  int precision = 2;
+  int precision = 10;
   bool darkTheme = true;
   bool showTime = false;
   TabBuilder tabBuilder = TabBuilder();
