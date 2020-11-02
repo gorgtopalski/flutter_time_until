@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_time_until/time/time_until.dart';
+import 'package:flutter_time_until/time/unit_description.dart';
 import 'package:provider/provider.dart';
 
 import '../application_state.dart';
-import '../time_calculator.dart';
 
 class TabBuilder extends State<StatefulWidget>
     with SingleTickerProviderStateMixin {
@@ -36,7 +37,7 @@ class TabBuilder extends State<StatefulWidget>
   @override
   Widget build(BuildContext context) {
     var state = context.watch<ApplicationState>();
-    var calc = TimeCalculator(state.now, state.selected, state.precision);
+    var calc = TimeUntil(state.now, state.selected, state.precision);
 
     return Container(
       margin: const EdgeInsets.all(4),
@@ -115,6 +116,7 @@ class _StatufulEntryState extends State<StatufulEntry> {
           leading: Icon(icon),
           contentPadding: EdgeInsets.all(8),
           title: Text(widget.title),
+          //onLongPress: () => {showDialog(context: context)},
           subtitle: tapped
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,9 +130,7 @@ class _StatufulEntryState extends State<StatufulEntry> {
                       height: 25,
                     ),
                     Text(
-                        'The amount of time light takes to travel one Planck length. Theoretically, this is the smallest time measurement that will ever be possible.[3] Smaller time units have no use in physics as we understand it today.'),
-                    SizedBox(
-                      height: 25,
+                      UnitOfTimeDescription.getDescription(widget.subtitle),
                     ),
                   ],
                 )
