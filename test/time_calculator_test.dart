@@ -52,7 +52,7 @@ void main() {
 
   test('test difference in seconds', () {
     var diff = TimeCalculator.diffInSeconds(start, end, precision);
-    var value = (31 * 24 * 60 * 60).toStringAsPrecision(precision);
+    var value = (31 * 24 * 60 * 60).toString();
 
     expect(diff, value);
   });
@@ -66,8 +66,8 @@ void main() {
 
   test('test difference in Ke', () {
     var diff = TimeCalculator.diffInKe(start, end, precision);
-    var value =
-        ((31 * 24 * 60 * 60) / ((14 * 60) + 24)).toStringAsPrecision(precision);
+    var value = ((31 * 24 * 60 * 60) / ((14.4 * 60) + 24))
+        .toStringAsPrecision(precision);
 
     expect(diff, value);
   });
