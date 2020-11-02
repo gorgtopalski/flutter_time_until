@@ -37,7 +37,8 @@ class MyApp extends StatelessWidget {
 
 class HomePage extends StatelessWidget {
   final String title = 'Time Until';
-  final format = new DateFormat.yMd();
+  final dateFormat = new DateFormat.yMd();
+  final timeFormat = new DateFormat.Hm();
 
   //Shows the DatePicker widget and updates the state if one is selected
   void _showDatePicker(BuildContext context, ApplicationState state) {
@@ -63,11 +64,15 @@ class HomePage extends StatelessWidget {
     }
   }
 
-  String _generateTitle(DateTime selected) {
+  String _generateTitle(DateTime selected, [bool displayTime = false]) {
     if (selected == null) {
       return title;
     } else {
-      return 'Time Until ${format.format(selected.toLocal())}';
+      if (displayTime) {
+        return 'Time Until ${dateFormat.format(selected.toLocal())} ${timeFormat.format(selected.toLocal())}';
+      } else {
+        return 'Time Until ${dateFormat.format(selected.toLocal())}';
+      }
     }
   }
 
@@ -79,7 +84,7 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         leading: Icon(Icons.date_range),
         title: Text(
-          _generateTitle(state.selected),
+          _generateTitle(state.selected, state.showTime),
           textAlign: TextAlign.justify,
         ),
         bottom: state.isSelected ? state.tabBuilder.getTabBar(context) : null,
