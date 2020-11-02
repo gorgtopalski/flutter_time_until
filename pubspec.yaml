@@ -17,6 +17,8 @@ dependencies:
   provider: ^4.3.2+2
   shared_preferences: ">=0.5.12 <2.0.0"
   intl: ^0.16.1
+  flutter_launcher_icons: ^0.8.1
+
 
 dev_dependencies:
   flutter_test:
@@ -25,3 +27,9 @@ dev_dependencies:
 # The following section is specific to Flutter.
 flutter:
   uses-material-design: true
+
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/icon.png"

@@ -2,7 +2,7 @@
     package="es.topalski.flutter_time_until">
    <application
         android:label="flutter_time_until"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
