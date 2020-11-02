@@ -123,7 +123,9 @@ class _StatufulEntryState extends State<StatufulEntry> {
                   children: [
                     Row(
                       children: [
-                        Text(widget.subtitle),
+                        Text(
+                          widget.subtitle,
+                        ),
                       ],
                     ),
                     SizedBox(
@@ -131,6 +133,9 @@ class _StatufulEntryState extends State<StatufulEntry> {
                     ),
                     Text(
                       UnitOfTimeDescription.getDescription(widget.subtitle),
+                    ),
+                    SizedBox(
+                      height: 5,
                     ),
                   ],
                 )
