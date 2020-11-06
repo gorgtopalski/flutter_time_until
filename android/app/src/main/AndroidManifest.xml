@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="es.topalski.flutter_time_until">
    <application
-        android:label="flutter_time_until"
+        android:label="Time Until"
         android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
