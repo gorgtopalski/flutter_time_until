@@ -27,6 +27,8 @@ class UnitOfTimeDescription {
     'decades': 'A decade is a period of 10 years.',
     // https://en.wikipedia.org/wiki/Century
     'centuries': 'A century is a period of 100 years.',
+    // https://en.wikipedia.org/wiki/Lustrum
+    'lustrum': 'A lustrum was a period of 5 years used in Ancien Rome.',
     // https://en.wikipedia.org/wiki/Millennium
     'millenia':
         'A millennium is a period of one thousand years, sometimes called a kiloyear.',
