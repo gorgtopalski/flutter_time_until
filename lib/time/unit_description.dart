@@ -32,7 +32,7 @@ class UnitOfTimeDescription {
         'A millennium is a period of one thousand years, sometimes called a kiloyear.',
     // https://en.wikipedia.org/wiki/Traditional_Chinese_timekeeping#One-hundredth_of_a_day:_K%C3%A8
     'ke':
-        'A unit of the traditional Chinase timekeeping system. One kè was usually defined as 1/100 of a day.',
+        'A unit of the traditional Chinese timekeeping system. One kè was usually defined as 1/100 of a day.',
     // https://en.wikipedia.org/wiki/Planck_time
     'plank time':
         'The amount of time light takes to travel one Planck length. Theoretically, this is the smallest time measurement that will ever be possible.',
