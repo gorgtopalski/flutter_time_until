@@ -85,7 +85,7 @@ class HomePage extends StatelessWidget {
         leading: Icon(Icons.date_range),
         title: Text(
           _generateTitle(state.selected, state.showTime),
-          textAlign: TextAlign.justify,
+          textAlign: TextAlign.left,
         ),
         bottom: state.isSelected ? state.tabBuilder.getTabBar(context) : null,
         actions: [
