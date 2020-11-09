@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_time_until/state/application_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/widgets.dart';
-
-import '../application_state.dart';
 
 enum PopUpCommands { dark, increment, decrement, time }
 
 class ApplicationPopUpMenu extends StatelessWidget {
   void _precisionChangeNotification(BuildContext context) {
-    var state = context.read<ApplicationState>();
+    var state = context.read<ApplicationPreferences>();
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Text('Value precision is set to ${state.precision}'),
       duration: Duration(seconds: 1),
@@ -17,7 +16,7 @@ class ApplicationPopUpMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var state = context.watch<ApplicationState>();
+    var state = context.watch<ApplicationPreferences>();
     return Builder(
       builder: (context) => PopupMenuButton<PopUpCommands>(
         onSelected: (PopUpCommands result) {
@@ -27,18 +26,18 @@ class ApplicationPopUpMenu extends StatelessWidget {
               break;
             case PopUpCommands.increment:
               if (state.precision < 20) {
-                state.updatePrecission(state.precision + 1);
+                state.changePrecision(state.precision + 1);
                 _precisionChangeNotification(context);
               }
               break;
             case PopUpCommands.decrement:
               if (state.precision > 1) {
-                state.updatePrecission(state.precision - 1);
+                state.changePrecision(state.precision - 1);
                 _precisionChangeNotification(context);
               }
               break;
             case PopUpCommands.time:
-              state.showTimePicker(!state.showTime);
+              state.showTimeSelection(!state.showTime);
               break;
           }
         },

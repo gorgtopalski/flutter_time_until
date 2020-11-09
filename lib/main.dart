@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_time_until/state/application_preferences.dart';
+import 'package:flutter_time_until/state/application_timer.dart';
+import 'package:flutter_time_until/wigets/page_widget.dart';
 import 'package:flutter_time_until/wigets/popup_menu.dart';
 //import 'package:intl/date_symbol_data_file.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/intl_standalone.dart';
 import 'package:provider/provider.dart';
-
-import 'application_state.dart';
 import 'common/theme.dart';
 
 void main() {
@@ -15,16 +16,24 @@ void main() {
             Intl.defaultLocale = value,
             initializeDateFormatting(),
           })
-      .whenComplete(() => runApp(ChangeNotifierProvider(
-          create: (context) => ApplicationState(), child: MyApp())));
+      .whenComplete(() => runApp(MultiProvider(
+            providers: [
+              ChangeNotifierProvider(
+                create: (_) => ApplicationTimer(),
+              ),
+              ChangeNotifierProvider(
+                create: (_) => ApplicationPreferences(),
+              ),
+            ],
+            child: TimeUntilApplication(),
+          )));
 }
 
-class MyApp extends StatelessWidget {
+class TimeUntilApplication extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var theme =
-        ApplicationTheme(isDark: context.watch<ApplicationState>().darkTheme)
-            .themeData;
+    var isDark = context.watch<ApplicationPreferences>().darkTheme;
+    var theme = ApplicationTheme(isDark: isDark).themeData;
 
     return MaterialApp(
       title: 'Time Until',
@@ -41,26 +50,29 @@ class HomePage extends StatelessWidget {
   final timeFormat = new DateFormat.Hm();
 
   //Shows the DatePicker widget and updates the state if one is selected
-  void _showDatePicker(BuildContext context, ApplicationState state) {
-    if (state.showTime) {
+  void _showDatePicker(
+      BuildContext context, ApplicationTimer timer, bool showTime) {
+    var now = DateTime.now();
+
+    if (showTime) {
       showDatePicker(
         context: context,
-        initialDate: state.now,
-        firstDate: state.now,
-        lastDate: DateTime.utc(state.now.year + 50),
+        initialDate: now,
+        firstDate: now,
+        lastDate: DateTime.utc(now.year + 50),
       ).then((date) => {
             showTimePicker(
                     context: context,
                     initialTime: TimeOfDay(hour: 0, minute: 0))
-                .then((time) => state.setSelectedDate(date, time))
+                .then((time) => timer.setSelectedDate(date, time))
           });
     } else {
       showDatePicker(
         context: context,
-        initialDate: state.now,
-        firstDate: state.now,
-        lastDate: DateTime.utc(state.now.year + 50),
-      ).then((value) => {state.setSelectedDate(value)});
+        initialDate: now,
+        firstDate: now,
+        lastDate: DateTime.utc(now.year + 50),
+      ).then((value) => {timer.setSelectedDate(value)});
     }
   }
 
@@ -78,29 +90,31 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var state = context.watch<ApplicationState>();
+    var state = context.watch<ApplicationPreferences>();
+    var timer = context.watch<ApplicationTimer>();
+    var tabs = TabBuilder();
 
     return Scaffold(
       appBar: AppBar(
         leading: Icon(Icons.date_range),
         title: Text(
-          _generateTitle(state.selected, state.showTime),
+          _generateTitle(timer.selected, state.showTime),
           textAlign: TextAlign.left,
         ),
-        bottom: state.isSelected ? state.tabBuilder.getTabBar(context) : null,
+        bottom: timer.isSelected ? tabs.getTabBar(context) : null,
         actions: [
           ApplicationPopUpMenu(),
         ],
       ),
       body: Center(
-          child: state.isSelected
-              ? state.tabBuilder.build(context)
+          child: timer.isSelected
+              ? tabs.build(context)
               : Text(
                   'Please select a date',
                   style: Theme.of(context).textTheme.headline4,
                 )),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => {_showDatePicker(context, state)},
+        onPressed: () => {_showDatePicker(context, timer, state.showTime)},
         tooltip: 'Select a date',
         child: Icon(Icons.date_range),
       ),

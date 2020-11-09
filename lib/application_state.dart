@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'wigets/page_widget.dart';
-
+/*
 class ApplicationState extends ChangeNotifier {
   DateTime now = DateTime.now();
   DateTime selected;
@@ -13,6 +13,7 @@ class ApplicationState extends ChangeNotifier {
   bool darkTheme = true;
   bool showTime = false;
   TabBuilder tabBuilder = TabBuilder();
+  bool updateTimer = true;
 
   ApplicationState() {
     Timer.periodic(Duration(seconds: 1), updateCurrenTimeCallback);
@@ -55,3 +56,4 @@ class ApplicationState extends ChangeNotifier {
     notifyListeners();
   }
 }
+*/

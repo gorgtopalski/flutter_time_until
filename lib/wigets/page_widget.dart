@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_time_until/state/application_preferences.dart';
+import 'package:flutter_time_until/state/application_timer.dart';
 import 'package:flutter_time_until/time/time_until.dart';
 import 'package:flutter_time_until/time/unit_description.dart';
 import 'package:provider/provider.dart';
@@ -36,17 +38,23 @@ class TabBuilder extends State<StatefulWidget>
 
   @override
   Widget build(BuildContext context) {
-    var state = context.watch<ApplicationState>();
-    var calc = TimeUntil(state.now, state.selected, state.precision);
+    var prefs = context.watch<ApplicationPreferences>();
+    var timer = context.watch<ApplicationTimer>();
 
-    return Container(
-      margin: const EdgeInsets.all(4),
-      child: TabBarView(controller: _controller, children: [
-        DisplayEntries(calc.common),
-        DisplayEntries(calc.ancient),
-        DisplayEntries(calc.scientific),
-      ]),
-    );
+    if (timer.isSelected) {
+      var calc = TimeUntil(prefs.now, timer.selected, prefs.precision);
+
+      return Container(
+        margin: const EdgeInsets.all(4),
+        child: TabBarView(controller: _controller, children: [
+          DisplayEntries(calc.common),
+          DisplayEntries(calc.ancient),
+          DisplayEntries(calc.scientific),
+        ]),
+      );
+    } else {
+      return Container();
+    }
   }
 }
 
