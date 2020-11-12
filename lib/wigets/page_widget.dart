@@ -67,7 +67,6 @@ class _StatufulEntryState extends State<StatufulEntry> {
           leading: Icon(icon),
           contentPadding: EdgeInsets.all(8),
           title: Text(widget.title),
-          //onLongPress: () => {showDialog(context: context)},
           subtitle: tapped
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
