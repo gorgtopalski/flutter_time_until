@@ -50,6 +50,7 @@ class ApplicationPreferences extends ChangeNotifier {
     });
   }
 
+  // Togles the time selection preference
   void toogleTimeSelection() {
     _isShowTime = !_isShowTime;
     _prefs
@@ -57,6 +58,7 @@ class ApplicationPreferences extends ChangeNotifier {
         .whenComplete(() => notifyListeners());
   }
 
+  // Increments precision by one
   void incrementPrecision() {
     if (precision < 21) {
       _precision++;
@@ -66,6 +68,7 @@ class ApplicationPreferences extends ChangeNotifier {
     }
   }
 
+  // Decrements precision by one
   void decrementPrecision() {
     if (precision > 1) {
       _precision--;
@@ -75,6 +78,7 @@ class ApplicationPreferences extends ChangeNotifier {
     }
   }
 
+  // Toggle the used theme
   void toggleTheme() {
     _isDarkThemeSelected = !_isDarkThemeSelected;
     _prefs
@@ -82,6 +86,7 @@ class ApplicationPreferences extends ChangeNotifier {
         .whenComplete(() => notifyListeners());
   }
 
+  // Toggle the timer update
   void toggleTimerUpdate() {
     _isTimerUpdate = !_isTimerUpdate;
     _prefs
@@ -95,6 +100,7 @@ class ApplicationPreferences extends ChangeNotifier {
     }).whenComplete(() => notifyListeners());
   }
 
+  // Timer update callback
   void _updateNow(Timer t) {
     _now = DateTime.now();
     notifyListeners();
