@@ -7,27 +7,41 @@ class ApplicationPreferences extends ChangeNotifier {
   //Get stored preferences
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
-  int precision = 10;
-  bool darkTheme = true;
-  bool showTime = false;
-  bool updateTimer = true;
+  // This value is set to true after all values are loaded from SharedPreferences store.
   bool _isLoaded = false;
-
   bool get isLoaded => _isLoaded;
 
+  // Controls the precision of the calculation
+  int _precision = 10;
+  int get precision => _precision;
+
+  // Controls if dark theme is selected
+  bool _isDarkThemeSelected = true;
+  bool get darkTheme => _isDarkThemeSelected;
+
+  // Current date time for remaing time calculation
   DateTime _now = DateTime.now();
   DateTime get now => _now;
 
+  // Controls if the current time is updates generating the countdown animation
+  bool _isTimerUpdate = true;
+  bool get isTimerUpdate => _isTimerUpdate;
+
+  // Timer that updates the current time each second
   Timer _timer;
+
+  // Controls if time selection is shown
+  bool _isShowTime = false;
+  bool get isShowTime => _isShowTime;
 
   ApplicationPreferences() {
     _prefs.then((prefs) {
-      precision = prefs.getInt('precision') ?? 10;
-      darkTheme = prefs.getBool('darkTheme') ?? true;
-      showTime = prefs.getBool('showTime') ?? false;
-      updateTimer = prefs.getBool('updateTimer') ?? true;
+      _precision = prefs.getInt('precision') ?? 10;
+      _isDarkThemeSelected = prefs.getBool('isDarkThemeSelected') ?? true;
+      _isShowTime = prefs.getBool('isShowTime') ?? false;
+      _isTimerUpdate = prefs.getBool('isTimerUpdate') ?? true;
     }).whenComplete(() {
-      if (updateTimer) {
+      if (_isTimerUpdate) {
         _timer = Timer.periodic(Duration(seconds: 1), _updateNow);
       }
     }).whenComplete(() {
@@ -36,43 +50,53 @@ class ApplicationPreferences extends ChangeNotifier {
     });
   }
 
-  void _updateNow(Timer t) {
-    _now = DateTime.now();
-    notifyListeners();
+  void toogleTimeSelection() {
+    _isShowTime = !_isShowTime;
+    _prefs
+        .then((value) => value.setBool('isShowTime', _isShowTime))
+        .whenComplete(() => notifyListeners());
   }
 
-  void showTimeSelection(bool toShow) {
-    if (showTime != toShow) {
-      showTime = toShow;
-      _prefs.then((value) => value.setBool('showTimer', showTime));
-      notifyListeners();
+  void incrementPrecision() {
+    if (precision < 21) {
+      _precision++;
+      _prefs
+          .then((value) => value.setInt('precision', this._precision))
+          .whenComplete(() => notifyListeners());
     }
   }
 
-  void changePrecision(int precision) {
-    if (this.precision != precision) {
-      this.precision = precision;
-      _prefs.then((value) => value.setInt('precision', this.precision));
-      notifyListeners();
+  void decrementPrecision() {
+    if (precision > 1) {
+      _precision--;
+      _prefs
+          .then((value) => value.setInt('precision', this._precision))
+          .whenComplete(() => notifyListeners());
     }
   }
 
-  void changeTheme(bool theme) {
-    if (darkTheme != theme) {
-      this.darkTheme = theme;
-      _prefs.then((value) => value.setBool('darkTheme', darkTheme));
-      notifyListeners();
-    }
+  void toggleTheme() {
+    _isDarkThemeSelected = !_isDarkThemeSelected;
+    _prefs
+        .then((value) => value.setBool('darkTheme', _isDarkThemeSelected))
+        .whenComplete(() => notifyListeners());
   }
 
   void toggleTimerUpdate() {
-    updateTimer = !updateTimer;
-    _prefs.then((value) => value.setBool('updateTimer', updateTimer));
+    _isTimerUpdate = !_isTimerUpdate;
+    _prefs
+        .then((value) => value.setBool('isTimerUpdate', _isTimerUpdate))
+        .whenComplete(() {
+      if (!_isTimerUpdate && _timer.isActive) {
+        _timer.cancel();
+      } else {
+        _timer = Timer.periodic(Duration(seconds: 1), _updateNow);
+      }
+    }).whenComplete(() => notifyListeners());
+  }
+
+  void _updateNow(Timer t) {
+    _now = DateTime.now();
     notifyListeners();
-    if (!updateTimer && _timer.isActive) {
-      _timer.cancel();
-    } else {
-      _timer = Timer.periodic(Duration(seconds: 1), _updateNow);
-    }
   }
 }
