@@ -8,7 +8,7 @@ enum PopUpCommands { dark, increment, decrement, time, update }
 class ApplicationPopUpMenu extends StatelessWidget {
   void _precisionChangeNotification(BuildContext context) {
     var state = context.read<ApplicationPreferences>();
-    Scaffold.of(context).showSnackBar(SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text('Value precision is set to ${state.precision}'),
       duration: Duration(seconds: 1),
     ));
