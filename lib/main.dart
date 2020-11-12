@@ -21,9 +21,11 @@ void main() {
             providers: [
               ChangeNotifierProvider(
                 create: (_) => ApplicationTimer(),
+                lazy: false,
               ),
               ChangeNotifierProvider(
                 create: (_) => ApplicationPreferences(),
+                lazy: false,
               ),
             ],
             child: TimeUntilApplication(),
@@ -127,7 +129,7 @@ class HomePage extends StatelessWidget {
         appBar: AppBar(
           leading: Icon(Icons.date_range),
           title: Text(
-            _generateTitle(timer.selected, state.showTime),
+            _generateTitle(timer.selected, state.isShowTime),
             textAlign: TextAlign.left,
           ),
           bottom: timer.isSelected
@@ -157,7 +159,7 @@ class HomePage extends StatelessWidget {
                     style: Theme.of(context).textTheme.headline4,
                   )),
         floatingActionButton: FloatingActionButton(
-          onPressed: () => {_showDatePicker(context, timer, state.showTime)},
+          onPressed: () => {_showDatePicker(context, timer, state.isShowTime)},
           tooltip: 'Select a date',
           child: Icon(Icons.date_range),
         ),
