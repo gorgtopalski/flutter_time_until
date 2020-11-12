@@ -22,22 +22,18 @@ class ApplicationPopUpMenu extends StatelessWidget {
         onSelected: (PopUpCommands result) {
           switch (result) {
             case PopUpCommands.dark:
-              state.changeTheme(!state.darkTheme);
+              state.toggleTheme();
               break;
             case PopUpCommands.increment:
-              if (state.precision < 20) {
-                state.changePrecision(state.precision + 1);
-                _precisionChangeNotification(context);
-              }
+              state.incrementPrecision();
+              _precisionChangeNotification(context);
               break;
             case PopUpCommands.decrement:
-              if (state.precision > 1) {
-                state.changePrecision(state.precision - 1);
-                _precisionChangeNotification(context);
-              }
+              state.decrementPrecision();
+              _precisionChangeNotification(context);
               break;
             case PopUpCommands.time:
-              state.showTimeSelection(!state.showTime);
+              state.toogleTimeSelection();
               break;
             case PopUpCommands.update:
               state.toggleTimerUpdate();
@@ -65,13 +61,13 @@ class ApplicationPopUpMenu extends StatelessWidget {
           CheckedPopupMenuItem<PopUpCommands>(
             value: PopUpCommands.time,
             child: const Text('Allow time selection'),
-            checked: state.showTime,
+            checked: state.isShowTime,
           ),
           PopupMenuDivider(),
           CheckedPopupMenuItem<PopUpCommands>(
             value: PopUpCommands.update,
             child: const Text('Update Timer'),
-            checked: state.updateTimer,
+            checked: state.isTimerUpdate,
           ),
           PopupMenuDivider(),
           CheckedPopupMenuItem<PopUpCommands>(
