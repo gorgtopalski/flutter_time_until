@@ -6,7 +6,7 @@ class ApplicationTimer extends ChangeNotifier {
   // Get stored preferences
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
-  // Indicates that loading the stored values is complete
+  // This value is set to true after all values are loaded from SharedPreferences store.
   bool _isLoaded = false;
   bool get isLoaded => _isLoaded;
 
@@ -31,6 +31,7 @@ class ApplicationTimer extends ChangeNotifier {
     });
   }
 
+  // Saves and updates the selected date
   void setSelectedDate(DateTime selected, [TimeOfDay time]) {
     if (selected != null) {
       if (time != null) {
@@ -38,13 +39,14 @@ class ApplicationTimer extends ChangeNotifier {
             selected.add(Duration(hours: time.hour, minutes: time.minute));
       }
 
+      // Saves and updates the value if it hasn't changed
       if (_selected != selected) {
         _selected = selected;
         _isSelected = true;
-        _prefs.then((value) => value.setBool('isSelected', _isSelected));
-        _prefs.then((value) =>
-            value.setString('selectedDate', _selected.toIso8601String()));
-        notifyListeners();
+        _prefs.then((prefs) {
+          prefs.setBool('isSelected', _isSelected);
+          prefs.setString('selectedDate', _selected.toIso8601String());
+        }).whenComplete(() => notifyListeners());
       }
     }
   }
