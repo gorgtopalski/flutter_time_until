@@ -47,7 +47,7 @@ class TimeUntilApplication extends StatelessWidget {
       )));
     } else {
       var isDark = context.watch<ApplicationPreferences>().darkTheme;
-      var theme = ApplicationTheme(isDark: isDark).themeData;
+      var theme = ApplicationTheme.themeData(isDark);
 
       return MaterialApp(
         title: 'Time Until',
