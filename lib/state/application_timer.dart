@@ -3,23 +3,32 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApplicationTimer extends ChangeNotifier {
-  //Get stored preferences
-  SharedPreferences _prefs;
-  DateTime selected;
-  bool isSelected = false;
+  // Get stored preferences
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+  // Indicates that loading the stored values is complete
+  bool _isLoaded = false;
+  bool get isLoaded => _isLoaded;
+
+  // Selected date
+  DateTime _selected;
+  DateTime get selected => _selected;
+
+  // True if the selected date is not null
+  bool _isSelected = false;
+  bool get isSelected => _isSelected;
 
   ApplicationTimer() {
-    SharedPreferences.getInstance()
-        .then((value) => _prefs = value)
-        .whenComplete(() => _load());
-  }
-
-  void _load() {
-    var date = _prefs.getString('selectedDate') ?? null;
-    if (date != null) {
-      selected = DateTime.tryParse(date);
-      isSelected = _prefs.getBool('isSelected');
-    }
+    _prefs.then((prefs) {
+      var date = prefs.getString('selectedDate') ?? null;
+      if (date != null) {
+        _selected = DateTime.tryParse(date);
+        _isSelected = prefs.getBool('isSelected');
+      }
+    }).whenComplete(() {
+      _isLoaded = true;
+      notifyListeners();
+    });
   }
 
   void setSelectedDate(DateTime selected, [TimeOfDay time]) {
@@ -29,11 +38,12 @@ class ApplicationTimer extends ChangeNotifier {
             selected.add(Duration(hours: time.hour, minutes: time.minute));
       }
 
-      if (this.selected != selected) {
-        this.selected = selected;
-        isSelected = true;
-        _prefs.setBool('isSelected', isSelected);
-        _prefs.setString('selectedDate', selected.toIso8601String());
+      if (_selected != selected) {
+        _selected = selected;
+        _isSelected = true;
+        _prefs.then((value) => value.setBool('isSelected', _isSelected));
+        _prefs.then((value) =>
+            value.setString('selectedDate', _selected.toIso8601String()));
         notifyListeners();
       }
     }
