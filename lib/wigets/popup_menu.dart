@@ -3,7 +3,7 @@ import 'package:flutter_time_until/state/application_preferences.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/widgets.dart';
 
-enum PopUpCommands { dark, increment, decrement, time }
+enum PopUpCommands { dark, increment, decrement, time, update }
 
 class ApplicationPopUpMenu extends StatelessWidget {
   void _precisionChangeNotification(BuildContext context) {
@@ -39,6 +39,9 @@ class ApplicationPopUpMenu extends StatelessWidget {
             case PopUpCommands.time:
               state.showTimeSelection(!state.showTime);
               break;
+            case PopUpCommands.update:
+              state.toggleTimerUpdate();
+              break;
           }
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<PopUpCommands>>[
@@ -63,6 +66,12 @@ class ApplicationPopUpMenu extends StatelessWidget {
             value: PopUpCommands.time,
             child: const Text('Allow time selection'),
             checked: state.showTime,
+          ),
+          PopupMenuDivider(),
+          CheckedPopupMenuItem<PopUpCommands>(
+            value: PopUpCommands.update,
+            child: const Text('Update Timer'),
+            checked: state.updateTimer,
           ),
           PopupMenuDivider(),
           CheckedPopupMenuItem<PopUpCommands>(
