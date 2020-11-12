@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_time_until/state/application_preferences.dart';
 import 'package:flutter_time_until/state/application_timer.dart';
+import 'package:flutter_time_until/time/time_until.dart';
 import 'package:flutter_time_until/wigets/page_widget.dart';
 import 'package:flutter_time_until/wigets/popup_menu.dart';
-//import 'package:intl/date_symbol_data_file.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/intl_standalone.dart';
 import 'package:provider/provider.dart';
+
 import 'common/theme.dart';
 
 void main() {
@@ -32,15 +33,27 @@ void main() {
 class TimeUntilApplication extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var isDark = context.watch<ApplicationPreferences>().darkTheme;
-    var theme = ApplicationTheme(isDark: isDark).themeData;
+    if (!context.watch<ApplicationTimer>().isLoaded &&
+        !context.watch<ApplicationPreferences>().isLoaded) {
+      return Container(
+          child: Center(
+              child: Padding(
+        padding: const EdgeInsets.all(50.0),
+        child: CircularProgressIndicator(
+          value: null,
+        ),
+      )));
+    } else {
+      var isDark = context.watch<ApplicationPreferences>().darkTheme;
+      var theme = ApplicationTheme(isDark: isDark).themeData;
 
-    return MaterialApp(
-      title: 'Time Until',
-      theme: theme,
-      home: HomePage(),
-      debugShowCheckedModeBanner: false,
-    );
+      return MaterialApp(
+        title: 'Time Until',
+        theme: theme,
+        home: HomePage(),
+        debugShowCheckedModeBanner: false,
+      );
+    }
   }
 }
 
@@ -48,6 +61,20 @@ class HomePage extends StatelessWidget {
   final String title = 'Time Until';
   final dateFormat = new DateFormat.yMd();
   final timeFormat = new DateFormat.Hm();
+  final List<Tab> tabs = <Tab>[
+    Tab(
+      icon: Icon(Icons.query_builder),
+      text: 'Common',
+    ),
+    Tab(
+      icon: Icon(Icons.public),
+      text: 'Ancient',
+    ),
+    Tab(
+      icon: Icon(Icons.biotech),
+      text: 'Scientifc',
+    ),
+  ];
 
   //Shows the DatePicker widget and updates the state if one is selected
   void _showDatePicker(
@@ -92,31 +119,48 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     var state = context.watch<ApplicationPreferences>();
     var timer = context.watch<ApplicationTimer>();
-    var tabs = TabBuilder();
+    var calc = TimeUntil(state.now, timer.selected, state.precision);
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: Icon(Icons.date_range),
-        title: Text(
-          _generateTitle(timer.selected, state.showTime),
-          textAlign: TextAlign.left,
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: Icon(Icons.date_range),
+          title: Text(
+            _generateTitle(timer.selected, state.showTime),
+            textAlign: TextAlign.left,
+          ),
+          bottom: timer.isSelected
+              ? TabBar(
+                  tabs: tabs,
+                  indicatorColor: Theme.of(context).accentColor,
+                )
+              : null,
+          actions: [
+            ApplicationPopUpMenu(),
+          ],
         ),
-        bottom: timer.isSelected ? tabs.getTabBar(context) : null,
-        actions: [
-          ApplicationPopUpMenu(),
-        ],
-      ),
-      body: Center(
-          child: timer.isSelected
-              ? tabs.build(context)
-              : Text(
-                  'Please select a date',
-                  style: Theme.of(context).textTheme.headline4,
-                )),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => {_showDatePicker(context, timer, state.showTime)},
-        tooltip: 'Select a date',
-        child: Icon(Icons.date_range),
+        body: Center(
+            child: timer.isSelected
+                ? Container(
+                    margin: const EdgeInsets.all(4),
+                    child: TabBarView(
+                      children: [
+                        DisplayEntries(calc.common),
+                        DisplayEntries(calc.ancient),
+                        DisplayEntries(calc.scientific),
+                      ],
+                    ),
+                  )
+                : Text(
+                    'Please select a date',
+                    style: Theme.of(context).textTheme.headline4,
+                  )),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => {_showDatePicker(context, timer, state.showTime)},
+          tooltip: 'Select a date',
+          child: Icon(Icons.date_range),
+        ),
       ),
     );
   }
