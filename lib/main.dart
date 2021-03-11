@@ -52,7 +52,8 @@ class TimeUntilApplication extends StatelessWidget {
       return MaterialApp(
         title: 'Time Until',
         theme: theme,
-        home: HomePage(),
+        home: TimePage(),
+        //home: HomePage(),
         debugShowCheckedModeBanner: false,
       );
     }
@@ -60,9 +61,77 @@ class TimeUntilApplication extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget {
+  final entries = <Widget>[
+    Card(
+        margin: EdgeInsets.all(4),
+        child: ListTile(
+            contentPadding: EdgeInsets.all(8),
+            leading: Icon(Icons.hotel),
+            title: Text('Vacation'),
+            subtitle: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(new DateFormat.yMd()
+                    .format(DateTime.now().add(Duration(days: 5500)).toLocal())
+                    .toString()),
+                Text(DateTime.now()
+                        .add(Duration(days: 5500))
+                        .difference(DateTime.now())
+                        .inDays
+                        .toString() +
+                    ' days remaing')
+              ],
+            ))),
+    Card(
+        margin: EdgeInsets.all(4),
+        child: ListTile(
+            onTap: () {},
+            contentPadding: EdgeInsets.all(8),
+            leading: Icon(Icons.hotel),
+            title: Text('Vacation'),
+            subtitle: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(new DateFormat.yMd()
+                    .format(DateTime.now().add(Duration(days: 5500)).toLocal())
+                    .toString()),
+                Text(DateTime.now()
+                        .add(Duration(days: 5500))
+                        .difference(DateTime.now())
+                        .inDays
+                        .toString() +
+                    ' days remaing')
+              ],
+            ))),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: Icon(Icons.date_range),
+        title: Text('Time Until'),
+      ),
+      body: ListView.builder(
+        itemBuilder: (BuildContext context, int index) {
+          return entries[index];
+        },
+        itemCount: entries.length,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: Icon(Icons.add),
+        tooltip: 'Add a date countdown',
+      ),
+    );
+  }
+}
+
+class TimePage extends StatelessWidget {
   final String title = 'Time Until';
   final dateFormat = new DateFormat.yMd();
   final timeFormat = new DateFormat.Hm();
+
   final List<Tab> tabs = <Tab>[
     Tab(
       icon: Icon(Icons.query_builder),
@@ -83,32 +152,27 @@ class HomePage extends StatelessWidget {
       BuildContext context, ApplicationTimer timer, bool showTime) {
     var now = DateTime.now();
 
-    if (showTime) {
-      showDatePicker(
-        context: context,
-        initialDate: now,
-        firstDate: now,
-        lastDate: DateTime.utc(now.year + 50),
-      ).then((date) => {
-            showTimePicker(
-                    context: context,
-                    initialTime: TimeOfDay(hour: 0, minute: 0))
-                .then((time) => timer.setSelectedDate(date, time))
-          });
-    } else {
-      showDatePicker(
-        context: context,
-        initialDate: now,
-        firstDate: now,
-        lastDate: DateTime.utc(now.year + 50),
-      ).then((value) => {timer.setSelectedDate(value)});
-    }
+    showDatePicker(
+            context: context,
+            initialDate: now,
+            firstDate: now,
+            lastDate: DateTime(now.year + 50))
+        .then((selectedDate) {
+      if (showTime) {
+        showTimePicker(context: context, initialTime: TimeOfDay.now()).then(
+            (selectedTime) =>
+                timer.setSelectedDate(selectedDate, selectedTime));
+      } else {
+        timer.setSelectedDate(selectedDate);
+      }
+    });
   }
 
-  String _generateTitle(DateTime selected, [bool displayTime = false]) {
-    if (selected == null) {
+  String _generateTitle(bool isTimeSelected, DateTime selected,
+      [bool displayTime = false]) {
+    if (!isTimeSelected)
       return title;
-    } else {
+    else {
       if (displayTime) {
         return 'Time Until ${dateFormat.format(selected.toLocal())} ${timeFormat.format(selected.toLocal())}';
       } else {
@@ -129,7 +193,7 @@ class HomePage extends StatelessWidget {
         appBar: AppBar(
           leading: Icon(Icons.date_range),
           title: Text(
-            _generateTitle(timer.selected, state.isShowTime),
+            _generateTitle(timer.isSelected, timer.selected, state.isShowTime),
             textAlign: TextAlign.left,
           ),
           bottom: timer.isSelected
@@ -143,7 +207,7 @@ class HomePage extends StatelessWidget {
           ],
         ),
         body: Center(
-            child: timer.isSelected
+            child: context.watch<ApplicationTimer>().isSelected
                 ? Container(
                     margin: const EdgeInsets.all(4),
                     child: TabBarView(

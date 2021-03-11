@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_time_until/state/application_preferences.dart';
+import 'package:flutter_time_until/state/application_timer.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/widgets.dart';
 
-enum PopUpCommands { dark, increment, decrement, time, update }
+enum PopUpCommands { dark, increment, decrement, time, update, reset }
 
 class ApplicationPopUpMenu extends StatelessWidget {
   void _precisionChangeNotification(BuildContext context) {
@@ -17,6 +18,7 @@ class ApplicationPopUpMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var state = context.watch<ApplicationPreferences>();
+
     return Builder(
       builder: (context) => PopupMenuButton<PopUpCommands>(
         onSelected: (PopUpCommands result) {
@@ -37,6 +39,30 @@ class ApplicationPopUpMenu extends StatelessWidget {
               break;
             case PopUpCommands.update:
               state.toggleTimerUpdate();
+              break;
+            case PopUpCommands.reset:
+              showDialog(
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                            title: Text('Reset Timer'),
+                            content: Text(
+                                'You are about to reset the application timer.'),
+                            actions: [
+                              TextButton(
+                                  onPressed: () => Navigator.pop(context, true),
+                                  child: Text('Ok')),
+                              ElevatedButton(
+                                  onPressed: () =>
+                                      Navigator.pop(context, false),
+                                  child: Text('Cancel')),
+                            ],
+                          ),
+                      barrierDismissible: true)
+                  .then((value) {
+                if (value == true) {
+                  context.read<ApplicationTimer>().reset();
+                }
+              });
               break;
           }
         },
@@ -74,6 +100,14 @@ class ApplicationPopUpMenu extends StatelessWidget {
             value: PopUpCommands.dark,
             child: const Text('Dark Mode'),
             checked: state.darkTheme,
+          ),
+          PopupMenuDivider(),
+          PopupMenuItem<PopUpCommands>(
+            value: PopUpCommands.reset,
+            child: ListTile(
+              leading: Icon(Icons.timer),
+              title: Text('Reset Timer'),
+            ),
           ),
         ],
       ),
