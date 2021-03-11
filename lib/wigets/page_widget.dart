@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_time_until/time/unit_description.dart';
 
 class DisplayEntries extends StatelessWidget {
-  final Map<String, String> entries;
+  final Map<String, String?> entries;
 
   DisplayEntries(this.entries);
 
@@ -38,7 +38,7 @@ class Entry extends StatelessWidget {
 }
 
 class StatufulEntry extends StatefulWidget {
-  final String title;
+  final String? title;
   final String subtitle;
 
   StatufulEntry(this.title, this.subtitle);
@@ -66,7 +66,7 @@ class _StatufulEntryState extends State<StatufulEntry> {
           selected: tapped,
           leading: Icon(icon),
           contentPadding: EdgeInsets.all(8),
-          title: Text(widget.title),
+          title: Text(widget.title!),
           subtitle: tapped
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

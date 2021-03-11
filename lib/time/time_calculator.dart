@@ -14,34 +14,34 @@ class TimeCalculator {
   static _diffYears(DateTime start, DateTime end) =>
       end.difference(start).inSeconds / (daysInYear * secondsInDay);
 
-  static String diffInYears(DateTime start, DateTime end,
+  static String? diffInYears(DateTime start, DateTime end,
       [int precision = _precision]) {
     return _diffYears(start, end).toStringAsPrecision(precision);
   }
 
-  static String diffInMonths(DateTime start, DateTime end,
+  static String? diffInMonths(DateTime start, DateTime end,
       [int precision = _precision]) {
     return (_diff(start, end) / (daysInMonth * secondsInDay))
         .toStringAsPrecision(precision);
   }
 
-  static String diffInWeeks(DateTime start, DateTime end,
+  static String? diffInWeeks(DateTime start, DateTime end,
       [int precision = _precision]) {
     return (_diff(start, end) / (daysInWeek * secondsInDay))
         .toStringAsPrecision(precision);
   }
 
-  static String diffInDays(DateTime start, DateTime end,
+  static String? diffInDays(DateTime start, DateTime end,
       [int precision = _precision]) {
     return (_diff(start, end) / secondsInDay).toStringAsPrecision(precision);
   }
 
-  static String diffInHours(DateTime start, DateTime end,
+  static String? diffInHours(DateTime start, DateTime end,
       [int precision = _precision]) {
     return (_diff(start, end) / (60 * 60)).toStringAsPrecision(precision);
   }
 
-  static String diffInMinutes(DateTime start, DateTime end,
+  static String? diffInMinutes(DateTime start, DateTime end,
       [int precision = _precision]) {
     return (_diff(start, end) / 60).toStringAsPrecision(precision);
   }
@@ -54,44 +54,44 @@ class TimeCalculator {
   // Ancient units of time
 
   // https://en.wikipedia.org/wiki/Moment_(time)
-  static String diffInMedievalMoment(DateTime start, DateTime end,
+  static String? diffInMedievalMoment(DateTime start, DateTime end,
       [int precision = _precision]) {
     return (_diff(start, end) / 90).toStringAsPrecision(precision);
   }
 
   //https://en.wikipedia.org/wiki/Lustrum
-  static String diffInLustrum(DateTime start, DateTime end,
+  static String? diffInLustrum(DateTime start, DateTime end,
       [int precision = _precision]) {
     return (_diffYears(start, end) / 5).toStringAsPrecision(precision);
   }
 
   // https://en.wikipedia.org/wiki/Decade
-  static String diffInDecades(DateTime start, DateTime end,
+  static String? diffInDecades(DateTime start, DateTime end,
       [int precision = _precision]) {
     return (_diffYears(start, end) / 10).toStringAsPrecision(precision);
   }
 
   // https://en.wikipedia.org/wiki/Century
-  static String diffInCenturies(DateTime start, DateTime end,
+  static String? diffInCenturies(DateTime start, DateTime end,
       [int precision = _precision]) {
     return (_diffYears(start, end) / 100).toStringAsPrecision(precision);
   }
 
   // https://en.wikipedia.org/wiki/Millennium
-  static String diffInMillennia(DateTime start, DateTime end,
+  static String? diffInMillennia(DateTime start, DateTime end,
       [int precision = _precision]) {
     return (_diffYears(start, end) / 1000).toStringAsPrecision(precision);
   }
 
   // https://en.wikipedia.org/wiki/Traditional_Chinese_timekeeping
-  static String diffInKe(DateTime start, DateTime end,
+  static String? diffInKe(DateTime start, DateTime end,
       [int precision = _precision]) {
     return (_diff(start, end) / ((14.4 * 60) + 24))
         .toStringAsPrecision(precision);
   }
 
   // https://en.wiktionary.org/wiki/megayear
-  static String diffInMegannum(DateTime start, DateTime end,
+  static String? diffInMegannum(DateTime start, DateTime end,
       [int precision = _precision]) {
     return (_diffYears(start, end) / pow(10, 6)).toStringAsPrecision(precision);
   }
@@ -99,7 +99,7 @@ class TimeCalculator {
   // Scientific units of time
 
   //https://en.wikipedia.org/wiki/Galactic_year
-  static String diffInGalacticYear(DateTime start, DateTime end,
+  static String? diffInGalacticYear(DateTime start, DateTime end,
       [int precision = _precision]) {
     return ((_diffYears(start, end) / (2.3 * pow(10, 8))))
         .toStringAsPrecision(precision);

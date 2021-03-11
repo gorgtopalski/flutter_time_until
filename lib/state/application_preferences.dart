@@ -28,7 +28,7 @@ class ApplicationPreferences extends ChangeNotifier {
   bool get isTimerUpdate => _isTimerUpdate;
 
   // Timer that updates the current time each second
-  Timer _timer;
+  late Timer _timer;
 
   // Controls if time selection is shown
   bool _isShowTime = false;
