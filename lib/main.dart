@@ -158,12 +158,18 @@ class TimePage extends StatelessWidget {
             firstDate: now,
             lastDate: DateTime(now.year + 50))
         .then((selectedDate) {
-      if (showTime) {
-        showTimePicker(context: context, initialTime: TimeOfDay.now()).then(
-            (selectedTime) =>
-                timer.setSelectedDate(selectedDate, selectedTime));
-      } else {
-        timer.setSelectedDate(selectedDate);
+      // If the selection was cancelled it will not show the time picker
+      if (selectedDate != null) {
+        if (showTime) {
+          showTimePicker(context: context, initialTime: TimeOfDay.now())
+              .then((selectedTime) {
+            if (selectedTime != null) {
+              timer.setSelectedDate(selectedDate, selectedTime);
+            }
+          });
+        } else {
+          timer.setSelectedDate(selectedDate);
+        }
       }
     });
   }
