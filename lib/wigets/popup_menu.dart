@@ -119,16 +119,6 @@ class ApplicationPopUpMenu extends StatelessWidget {
             child: const Text('Dark Mode'),
             checked: state.darkTheme,
           ),
-/*
-          PopupMenuDivider(),
-          PopupMenuItem<PopUpCommands>(
-            value: PopUpCommands.reset,
-            child: ListTile(
-              leading: Icon(Icons.timer),
-              title: Text('Reset Timer'),
-            ),
-          ),
-          */
         ],
       ),
     );
