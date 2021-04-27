@@ -1,10 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_time_until/state/application_preferences.dart';
-import 'package:flutter_time_until/state/application_timer.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/widgets.dart';
 
-enum PopUpCommands { dark, increment, decrement, time, update, reset }
+enum PopUpCommands {
+  dark,
+  increment,
+  decrement,
+  update,
+  about,
+}
+
+class MainPopUpMenu extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var prefs = context.watch<ApplicationPreferences>();
+    return Builder(
+      builder: (context) => PopupMenuButton<PopUpCommands>(
+        onSelected: (PopUpCommands result) {
+          if (result == PopUpCommands.dark) {
+            prefs.toggleTheme();
+          }
+
+          if (result == PopUpCommands.update) {
+            prefs.toggleTimerUpdate();
+          }
+
+          if (result == PopUpCommands.about) {
+            showAboutDialog(context: context);
+          }
+        },
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<PopUpCommands>>[
+          CheckedPopupMenuItem<PopUpCommands>(
+            value: PopUpCommands.update,
+            child: const Text('Update Timer'),
+            checked: prefs.isTimerUpdate,
+          ),
+          PopupMenuDivider(),
+          CheckedPopupMenuItem<PopUpCommands>(
+            value: PopUpCommands.dark,
+            child: const Text('Dark Mode'),
+            checked: prefs.darkTheme,
+          ),
+          PopupMenuDivider(),
+          PopupMenuItem<PopUpCommands>(
+            value: PopUpCommands.about,
+            child: Text('About'),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class ApplicationPopUpMenu extends StatelessWidget {
   void _precisionChangeNotification(BuildContext context) {
@@ -34,35 +81,12 @@ class ApplicationPopUpMenu extends StatelessWidget {
               state.decrementPrecision();
               _precisionChangeNotification(context);
               break;
-            case PopUpCommands.time:
-              state.toogleTimeSelection();
-              break;
+
             case PopUpCommands.update:
               state.toggleTimerUpdate();
               break;
-            case PopUpCommands.reset:
-              showDialog(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                            title: Text('Reset Timer'),
-                            content: Text(
-                                'You are about to reset the application timer.'),
-                            actions: [
-                              TextButton(
-                                  onPressed: () => Navigator.pop(context, true),
-                                  child: Text('Ok')),
-                              ElevatedButton(
-                                  onPressed: () =>
-                                      Navigator.pop(context, false),
-                                  child: Text('Cancel')),
-                            ],
-                          ),
-                      barrierDismissible: true)
-                  .then((value) {
-                if (value == true) {
-                  context.read<ApplicationTimer>().reset();
-                }
-              });
+            case PopUpCommands.about:
+              //Not used here
               break;
           }
         },
@@ -85,12 +109,6 @@ class ApplicationPopUpMenu extends StatelessWidget {
           ),
           PopupMenuDivider(),
           CheckedPopupMenuItem<PopUpCommands>(
-            value: PopUpCommands.time,
-            child: const Text('Allow time selection'),
-            checked: state.isShowTime,
-          ),
-          PopupMenuDivider(),
-          CheckedPopupMenuItem<PopUpCommands>(
             value: PopUpCommands.update,
             child: const Text('Update Timer'),
             checked: state.isTimerUpdate,
@@ -100,14 +118,6 @@ class ApplicationPopUpMenu extends StatelessWidget {
             value: PopUpCommands.dark,
             child: const Text('Dark Mode'),
             checked: state.darkTheme,
-          ),
-          PopupMenuDivider(),
-          PopupMenuItem<PopUpCommands>(
-            value: PopUpCommands.reset,
-            child: ListTile(
-              leading: Icon(Icons.timer),
-              title: Text('Reset Timer'),
-            ),
           ),
         ],
       ),

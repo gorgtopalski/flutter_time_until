@@ -1,15 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive/hive.dart';
 
 class ApplicationPreferences extends ChangeNotifier {
   //Get stored preferences
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-
-  // This value is set to true after all values are loaded from SharedPreferences store.
-  bool _isLoaded = false;
-  bool get isLoaded => _isLoaded;
+  late Box _prefs = Hive.box('prefs');
 
   // Controls the precision of the calculation
   int _precision = 10;
@@ -30,41 +26,25 @@ class ApplicationPreferences extends ChangeNotifier {
   // Timer that updates the current time each second
   late Timer _timer;
 
-  // Controls if time selection is shown
-  bool _isShowTime = false;
-  bool get isShowTime => _isShowTime;
-
   ApplicationPreferences() {
-    _prefs.then((prefs) {
-      _precision = prefs.getInt('precision') ?? 10;
-      _isDarkThemeSelected = prefs.getBool('isDarkThemeSelected') ?? true;
-      _isShowTime = prefs.getBool('isShowTime') ?? false;
-      _isTimerUpdate = prefs.getBool('isTimerUpdate') ?? true;
-    }).whenComplete(() {
-      if (_isTimerUpdate) {
-        _timer = Timer.periodic(Duration(seconds: 1), _updateNow);
-      }
-    }).whenComplete(() {
-      _isLoaded = true;
-      notifyListeners();
-    });
-  }
+    _precision = _prefs.get('precision', defaultValue: 10);
+    _isDarkThemeSelected =
+        _prefs.get('isDarkThemeSelected', defaultValue: true);
+    _isTimerUpdate = _prefs.get('isTimerUpdate', defaultValue: true);
 
-  // Togles the time selection preference
-  void toogleTimeSelection() {
-    _isShowTime = !_isShowTime;
-    _prefs
-        .then((value) => value.setBool('isShowTime', _isShowTime))
-        .whenComplete(() => notifyListeners());
+    if (_isTimerUpdate) {
+      _timer = Timer.periodic(Duration(seconds: 1), _updateNow);
+    }
+
+    notifyListeners();
   }
 
   // Increments precision by one
   void incrementPrecision() {
     if (precision < 21) {
       _precision++;
-      _prefs
-          .then((value) => value.setInt('precision', this._precision))
-          .whenComplete(() => notifyListeners());
+      _prefs.put('precision', _precision);
+      notifyListeners();
     }
   }
 
@@ -72,32 +52,28 @@ class ApplicationPreferences extends ChangeNotifier {
   void decrementPrecision() {
     if (precision > 1) {
       _precision--;
-      _prefs
-          .then((value) => value.setInt('precision', this._precision))
-          .whenComplete(() => notifyListeners());
+      _prefs.put('precision', _precision);
+      notifyListeners();
     }
   }
 
   // Toggle the used theme
   void toggleTheme() {
     _isDarkThemeSelected = !_isDarkThemeSelected;
-    _prefs
-        .then((value) => value.setBool('darkTheme', _isDarkThemeSelected))
-        .whenComplete(() => notifyListeners());
+    _prefs.put('darkTheme', _isDarkThemeSelected);
+    notifyListeners();
   }
 
   // Toggle the timer update
   void toggleTimerUpdate() {
     _isTimerUpdate = !_isTimerUpdate;
-    _prefs
-        .then((value) => value.setBool('isTimerUpdate', _isTimerUpdate))
-        .whenComplete(() {
-      if (!_isTimerUpdate && _timer.isActive) {
-        _timer.cancel();
-      } else {
-        _timer = Timer.periodic(Duration(seconds: 1), _updateNow);
-      }
-    }).whenComplete(() => notifyListeners());
+    _prefs.put('isTimerUpdate', _isTimerUpdate);
+
+    _isTimerUpdate
+        ? _timer = Timer.periodic(Duration(seconds: 1), _updateNow)
+        : _timer.cancel();
+
+    notifyListeners();
   }
 
   // Timer update callback
