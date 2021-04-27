@@ -43,7 +43,7 @@ class HomePage extends StatelessWidget {
     return ListView.builder(
         itemCount: box.length,
         itemBuilder: (BuildContext context, int index) {
-          return HomePageCard.fromDataEntry(box.getAt(index), index);
+          return HomePageCard(box.getAt(index), index);
         });
   }
 
@@ -112,27 +112,11 @@ class HomePage extends StatelessWidget {
 }
 
 class HomePageCard extends StatelessWidget {
-  late final String title;
-  late final String targetDateString;
-  late final String remaingTimeString;
-  late final IconData icon;
-  late final int index;
-  late final DateTime? date;
+  final IconData icon;
+  final int index;
+  final DateEntry entry;
 
-  HomePageCard(
-      {required this.title,
-      required this.targetDateString,
-      required this.remaingTimeString,
-      this.icon = Icons.star});
-
-  HomePageCard.fromDataEntry(DateEntry entry, int index) {
-    this.date = entry.date;
-    this.title = entry.description ?? '';
-    this.targetDateString = DateFormat.yMd().format(entry.date);
-    this.remaingTimeString = entry.timeRemaining.inDays.toString() + ' days';
-    this.icon = entry.icon ?? Icons.star;
-    this.index = index;
-  }
+  HomePageCard(this.entry, this.index, {this.icon = Icons.star});
 
   @override
   Widget build(BuildContext context) {
@@ -147,17 +131,19 @@ class HomePageCard extends StatelessWidget {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>
-                          TimePage(this.date!, title: this.title)));
+                      builder: (context) => TimePage(
+                            entry.date,
+                            title: entry.description ?? '',
+                          )));
             },
             contentPadding: const EdgeInsets.all(8),
             leading: Icon(icon),
-            title: Text(title),
+            title: Text(entry.description ?? ''),
             subtitle: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(targetDateString),
-                Text(remaingTimeString),
+                Text(this.entry.timeSelectedString),
+                Text(this.entry.timeRemainingString),
               ],
             ),
           ),
@@ -185,10 +171,7 @@ class HomePageCard extends StatelessWidget {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddCountdownPage(
-                      date!,
-                      description: title,
-                    ),
+                    builder: (context) => EditCountdownPage(entry, index),
                   ));
             },
           ),
@@ -246,38 +229,43 @@ class HomePageCard extends StatelessWidget {
   }
 }
 
-class AddCountdownPage extends StatefulWidget {
-  final DateTime selectedDate;
-  final String description;
-
-  AddCountdownPage(this.selectedDate, {this.description = ''});
+class AddCountdownPage extends _CountdownPage {
+  AddCountdownPage(DateTime date, {String description = ''})
+      : super(DateEntry(description, date), -1);
 
   @override
-  _AddCountdownPageState createState() => _AddCountdownPageState();
-}
-
-class _AddCountdownPageState extends State<AddCountdownPage> {
-  final _formKey = GlobalKey<FormState>();
-  TimeOfDay? time;
-  DateTime? date;
-  DateTime? widgetDate;
-  bool showTime = false;
-
-  String description = '';
-
-  void _saveNewTimer() {
-    var entry = DateEntry(description, widget.selectedDate);
+  void saveCountdownTimer(BuildContext context, DateEntry entry, int index) {
     Hive.box<DateEntry>('dates').add(entry);
     Navigator.of(context).pop();
   }
+}
+
+class EditCountdownPage extends _CountdownPage {
+  EditCountdownPage(DateEntry entry, int index) : super(entry, index);
 
   @override
-  void initState() {
-    super.initState();
-
-    date = widget.selectedDate;
-    widgetDate = date;
+  void saveCountdownTimer(BuildContext context, DateEntry entry, int index) {
+    print('update');
+    Hive.box<DateEntry>('dates').putAt(index, entry);
+    Navigator.of(context).pop();
   }
+}
+
+abstract class _CountdownPage extends StatefulWidget {
+  late final DateEntry entry;
+  late final int index;
+
+  _CountdownPage(this.entry, this.index);
+
+  void saveCountdownTimer(BuildContext context, DateEntry entry, int index);
+
+  @override
+  _CountdownPageState createState() => _CountdownPageState();
+}
+
+class _CountdownPageState extends State<_CountdownPage> {
+  final _formKey = GlobalKey<FormState>();
+  bool showTime = false;
 
   @override
   Widget build(BuildContext context) {
@@ -290,11 +278,11 @@ class _AddCountdownPageState extends State<AddCountdownPage> {
             child: IconButton(
               onPressed: () {
                 SelectDateTime.selectDate(context,
-                        initialDate: this.widgetDate!)
+                        initialDate: this.widget.entry.date)
                     .then((value) {
                   if (value != null) {
                     setState(() {
-                      this.widgetDate = value;
+                      this.widget.entry.date = value;
                     });
                   }
                 });
@@ -309,12 +297,14 @@ class _AddCountdownPageState extends State<AddCountdownPage> {
             child: IconButton(
               onPressed: () {
                 showTimePicker(context: context, initialTime: TimeOfDay.now())
-                    .then((value) => this.setState(() {
-                          if (value != null) {
-                            time = value;
+                    .then((time) => this.setState(() {
+                          if (time != null) {
                             showTime = true;
-                            widgetDate = date!.add(Duration(
-                                hours: time!.hour, minutes: time!.minute));
+                            this.widget.entry.date =
+                                this.widget.entry.date.add(Duration(
+                                      hours: time.hour,
+                                      minutes: time.minute,
+                                    ));
                           }
                         }));
               },
@@ -340,8 +330,10 @@ class _AddCountdownPageState extends State<AddCountdownPage> {
                     //Display selected date
                     Text(
                       showTime
-                          ? DateFormat.yMd().add_Hm().format(widgetDate!)
-                          : DateFormat.yMd().format(widgetDate!),
+                          ? DateFormat.yMd()
+                              .add_Hm()
+                              .format(this.widget.entry.date)
+                          : DateFormat.yMd().format(this.widget.entry.date),
                       style: Theme.of(context).textTheme.headline3,
                     ),
                     SizedBox(height: 12),
@@ -353,9 +345,8 @@ class _AddCountdownPageState extends State<AddCountdownPage> {
                           labelText: "Description",
                           border: OutlineInputBorder(),
                         ),
-                        initialValue: widget.description,
-                        validator: (value) => value,
-                        onChanged: (value) => description = value,
+                        initialValue: widget.entry.description,
+                        onChanged: (value) => widget.entry.description = value,
                       ),
                     ),
                     SizedBox(height: 24),
@@ -363,7 +354,8 @@ class _AddCountdownPageState extends State<AddCountdownPage> {
                       height: 50,
                       width: 125,
                       child: ElevatedButton.icon(
-                        onPressed: _saveNewTimer,
+                        onPressed: () => widget.saveCountdownTimer(
+                            context, this.widget.entry, this.widget.index),
                         label: Text('Save'),
                         icon: Icon(
                           Icons.save,
