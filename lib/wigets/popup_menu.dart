@@ -25,10 +25,11 @@ class MainPopUpMenu extends StatelessWidget {
           if (result == PopUpCommands.update) {
             prefs.toggleTimerUpdate();
           }
-
+          /*
           if (result == PopUpCommands.about) {
             showAboutDialog(context: context);
-          }
+          },
+          */
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<PopUpCommands>>[
           CheckedPopupMenuItem<PopUpCommands>(
@@ -42,11 +43,14 @@ class MainPopUpMenu extends StatelessWidget {
             child: const Text('Dark Mode'),
             checked: prefs.darkTheme,
           ),
+          /*
+          TODO: Implement about
           PopupMenuDivider(),
           PopupMenuItem<PopUpCommands>(
             value: PopUpCommands.about,
             child: Text('About'),
           ),
+          */
         ],
       ),
     );
