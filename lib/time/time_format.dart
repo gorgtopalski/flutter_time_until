@@ -13,6 +13,23 @@ class TimeFormat {
   }
 
   static String formatDuration(Duration duration) {
-    return duration.inDays.toString() + ' days';
+    String value = '';
+
+    if (duration.abs().inDays > 1) {
+      value = duration.inDays.toString() + ' days';
+    } else {
+      if (duration.abs().inHours > 1) {
+        value = duration.inHours.toString() + ' hours';
+      } else {
+        if (duration.abs().inMinutes > 1) {
+          value = duration.inMinutes.toString() + ' minutes';
+        } else {
+          value = duration.inSeconds.toString() + ' seconds';
+        }
+      }
+    }
+
+    //duration.isNegative ? value += ' ago' : value += ' remaining';
+    return value;
   }
 }
