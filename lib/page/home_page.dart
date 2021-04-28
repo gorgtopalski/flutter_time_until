@@ -149,6 +149,8 @@ class HomePageCard extends StatelessWidget {
           ),
         ),
         actions: <Widget>[
+          //TODO: Implement share functionality
+          /*
           IconSlideAction(
             caption: 'Archive',
             color: Colors.blue,
@@ -161,6 +163,7 @@ class HomePageCard extends StatelessWidget {
             icon: Icons.share,
             onTap: () => _showSnackBar('Share'),
           ),
+          */
         ],
         secondaryActions: <Widget>[
           IconSlideAction(
@@ -188,10 +191,6 @@ class HomePageCard extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  _showSnackBar(String s) {
-    print(s);
   }
 
   Future<bool?> showAlertDialog(BuildContext context) {
@@ -267,6 +266,16 @@ class _CountdownPageState extends State<_CountdownPage> {
   final _formKey = GlobalKey<FormState>();
   bool showTime = false;
 
+  late DateTime date;
+  late String description;
+
+  @override
+  void initState() {
+    super.initState();
+    date = widget.entry.date;
+    description = widget.entry.description ?? '';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -277,12 +286,11 @@ class _CountdownPageState extends State<_CountdownPage> {
             message: 'Change date',
             child: IconButton(
               onPressed: () {
-                SelectDateTime.selectDate(context,
-                        initialDate: this.widget.entry.date)
+                SelectDateTime.selectDate(context, initialDate: date)
                     .then((value) {
                   if (value != null) {
                     setState(() {
-                      this.widget.entry.date = value;
+                      date = value;
                     });
                   }
                 });
@@ -300,11 +308,10 @@ class _CountdownPageState extends State<_CountdownPage> {
                     .then((time) => this.setState(() {
                           if (time != null) {
                             showTime = true;
-                            this.widget.entry.date =
-                                this.widget.entry.date.add(Duration(
-                                      hours: time.hour,
-                                      minutes: time.minute,
-                                    ));
+                            date = date.add(Duration(
+                              hours: time.hour,
+                              minutes: time.minute,
+                            ));
                           }
                         }));
               },
@@ -330,10 +337,8 @@ class _CountdownPageState extends State<_CountdownPage> {
                     //Display selected date
                     Text(
                       showTime
-                          ? DateFormat.yMd()
-                              .add_Hm()
-                              .format(this.widget.entry.date)
-                          : DateFormat.yMd().format(this.widget.entry.date),
+                          ? DateFormat.yMd().add_Hm().format(date)
+                          : DateFormat.yMd().format(date),
                       style: Theme.of(context).textTheme.headline3,
                     ),
                     SizedBox(height: 12),
@@ -345,8 +350,8 @@ class _CountdownPageState extends State<_CountdownPage> {
                           labelText: "Description",
                           border: OutlineInputBorder(),
                         ),
-                        initialValue: widget.entry.description,
-                        onChanged: (value) => widget.entry.description = value,
+                        initialValue: description,
+                        onChanged: (value) => description = value,
                       ),
                     ),
                     SizedBox(height: 24),
@@ -354,8 +359,12 @@ class _CountdownPageState extends State<_CountdownPage> {
                       height: 50,
                       width: 125,
                       child: ElevatedButton.icon(
-                        onPressed: () => widget.saveCountdownTimer(
-                            context, this.widget.entry, this.widget.index),
+                        onPressed: () {
+                          widget.entry.date = date;
+                          widget.entry.description = description;
+                          widget.saveCountdownTimer(
+                              context, this.widget.entry, this.widget.index);
+                        },
                         label: Text('Save'),
                         icon: Icon(
                           Icons.save,
