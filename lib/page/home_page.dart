@@ -10,6 +10,8 @@ import 'package:intl/intl.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class HomePage extends StatelessWidget {
+  final values = Hive.box<DateEntry>('dates').listenable();
+
   void _addNewDate(BuildContext context) {
     SelectDateTime.selectDate(context).then((selectedDate) {
       if (selectedDate != null) {
@@ -90,12 +92,16 @@ class HomePage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(4.0),
         child: ValueListenableBuilder(
-          valueListenable: Hive.box<DateEntry>('dates').listenable(),
+          valueListenable: values,
           builder: (context, Box box, widget) {
-            if (box.length == 0) {
+            try {
+              if (box.length == 0) {
+                return _showEmptyMessage(context);
+              } else {
+                return _buildListOfDates(context, box);
+              }
+            } catch (ex) {
               return _showEmptyMessage(context);
-            } else {
-              return _buildListOfDates(context, box);
             }
           },
         ),
