@@ -28,8 +28,7 @@ class ApplicationPreferences extends ChangeNotifier {
 
   ApplicationPreferences() {
     _precision = _prefs.get('precision', defaultValue: 10);
-    _isDarkThemeSelected =
-        _prefs.get('isDarkThemeSelected', defaultValue: true);
+    _isDarkThemeSelected = _prefs.get('darkTheme', defaultValue: true);
     _isTimerUpdate = _prefs.get('isTimerUpdate', defaultValue: true);
 
     if (_isTimerUpdate) {
@@ -60,8 +59,9 @@ class ApplicationPreferences extends ChangeNotifier {
   // Toggle the used theme
   void toggleTheme() {
     _isDarkThemeSelected = !_isDarkThemeSelected;
-    _prefs.put('darkTheme', _isDarkThemeSelected);
-    notifyListeners();
+    _prefs
+        .put('darkTheme', _isDarkThemeSelected)
+        .whenComplete(() => notifyListeners());
   }
 
   // Toggle the timer update
